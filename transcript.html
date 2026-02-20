@@ -227,17 +227,13 @@
         }
 
         function downloadPDF() {
-            const element = document.getElementById('transcript');
-            const id = document.getElementById('sId').innerText;
-            const opt = {
-                margin: 0,
-                filename: `Result_${id}.pdf`,
-                image: { type: 'jpeg', quality: 0.98 },
-                html2canvas: { scale: 3, useCORS: true },
-                jsPDF: { unit: 'mm', format: 'a4', orientation: 'portrait' }
-            };
-            html2pdf().set(opt).from(element).save();
-        }
+    const element = document.getElementById('transcript');
+    if (!element) {
+        alert("ভুল: 'transcript' আইডিওয়ালা কোনো এলিমেন্ট পাওয়া যায়নি!");
+        return;
+    }
+    html2pdf().from(element).save();
+}
 
     </script>
 </body>
