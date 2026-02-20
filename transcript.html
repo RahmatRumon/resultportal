@@ -228,25 +228,31 @@
 
         function downloadPDF() {
     const element = document.getElementById('transcript-paper');
-    const sIdElement = document.getElementById('sId');
-
-    if (!element) {
-        alert("ভুল: HTML-এ id='transcript' খুঁজে পাওয়া যায়নি!");
-        return;
-    }
-
-    const fileName = sIdElement ? `Result_${sIdElement.innerText}.pdf` : 'Result.pdf';
+    const sId = document.getElementById('sId').innerText;
 
     const opt = {
-        margin: 0,
-        filename: fileName,
-        image: { type: 'jpeg', quality: 0.98 },
-        html2canvas: { scale: 3, useCORS: true },
+        margin: [5, 5],
+        filename: `Result_${sId}.pdf`,
+        image: { type: 'jpeg', quality: 0.95 },
+        html2canvas: { 
+            scale: 2, 
+            useCORS: true,
+            letterRendering: true 
+        },
         jsPDF: { unit: 'mm', format: 'a4', orientation: 'portrait' }
     };
-
-    html2pdf().set(opt).from(element).save();
-                                }
+            
+    const btn = event.currentTarget;
+    const originalText = btn.innerHTML;
+    btn.innerText = "প্রসেসিং হচ্ছে...";
+    
+    html2pdf().set(opt).from(element).save().then(() => {
+        btn.innerHTML = originalText;
+    }).catch(err => {
+        alert("পিডিএফ তৈরি করতে সমস্যা হয়েছে। সিডিএন লিংক চেক করুন।");
+        btn.innerHTML = originalText;
+    });
+}
     </script>
 </body>
 </html>
