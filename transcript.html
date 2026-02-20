@@ -227,14 +227,26 @@
         }
 
         function downloadPDF() {
-    const element = document.getElementById('transcript');
+    const element = document.getElementById('transcript-paper');
+    const sIdElement = document.getElementById('sId');
+
     if (!element) {
-        alert("ভুল: 'transcript' আইডিওয়ালা কোনো এলিমেন্ট পাওয়া যায়নি!");
+        alert("ভুল: HTML-এ id='transcript' খুঁজে পাওয়া যায়নি!");
         return;
     }
-    html2pdf().from(element).save();
-}
 
+    const fileName = sIdElement ? `Result_${sIdElement.innerText}.pdf` : 'Result.pdf';
+
+    const opt = {
+        margin: 0,
+        filename: fileName,
+        image: { type: 'jpeg', quality: 0.98 },
+        html2canvas: { scale: 3, useCORS: true },
+        jsPDF: { unit: 'mm', format: 'a4', orientation: 'portrait' }
+    };
+
+    html2pdf().set(opt).from(element).save();
+                                }
     </script>
 </body>
 </html>
