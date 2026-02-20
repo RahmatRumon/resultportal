@@ -1,0 +1,86 @@
+<!DOCTYPE html>
+<html lang="bn">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Search Result|Student Portal</title>
+    <script src="tailwindcss.js"></script>
+    <style>
+        @import url('https://fonts.googleapis.com/css2?family=Hind+Siliguri:wght@300;400;600;700&display=swap');
+        body { font-family: 'Hind Siliguri', sans-serif; background-color: #f0f2f5; }
+    </style>
+</head>
+<body class="flex items-center justify-center min-h-screen p-4">
+
+    <div class="w-full max-w-md bg-white p-8 rounded-xl shadow-2xl border-t-4 border-blue-900">
+        <div class="text-center mb-8">
+            <img src="logo.png" class="w-20 h-20 mx-auto mb-2">
+            <h2 class="text-2xl font-bold text-blue-900">রেজাল্ট পোর্টাল</h2>
+            <p class="text-gray-500 text-sm">আপনার তথ্য দিয়ে "রেজাল্ট দেখুন" বাটনে ক্লিক করুন</p>
+        </div>
+
+        <div class="space-y-5">
+            <div>
+                <label class="block text-sm font-bold text-gray-700 mb-1">আইডি নাম্বার (ID No.)</label>
+                <input type="number" id="studentId" placeholder="যেমন: 1126001" class="w-full p-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-600 outline-none transition">
+            </div>
+            <div>
+                <label class="block text-sm font-bold text-gray-700 mb-1">জন্ম তারিখ (Date of Birth)</label>
+                <input type="date" id="dob" class="w-full p-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-600 outline-none transition">
+            </div>
+            
+            <button onclick="verifyAndRedirect()" class="w-full bg-blue-900 text-white py-3 rounded-lg font-bold ">
+                রেজাল্ট দেখুন
+            </button>
+        </div>
+
+        <p id="errorMsg" class="text-red-500 mt-4 text-center font-medium hidden bg-red-50 p-2 rounded border border-red-200 text-sm">
+            দুঃখিত! কোনো তথ্য পাওয়া যায়নি। আবার চেষ্টা করুন।
+        </p>
+    </div>
+
+    <script>
+        const jsonUrl = "https://gist.githubusercontent.com/RahmatRumon/9ad0377ed9608b1f64a343870ce037de/raw/result.json";
+
+        async function verifyAndRedirect() {
+            const inputId = document.getElementById('studentId').value.trim();
+            const inputDate = document.getElementById('dob').value;
+            const errorMsg = document.getElementById('errorMsg');
+            const btn = document.querySelector('button');
+
+            if(!inputId || !inputDate) {
+                alert("দয়া করে আইডি এবং জন্ম তারিখ প্রদান করুন।");
+                return;
+            }
+
+            btn.innerText = "যাচাই করা হচ্ছে...";
+            btn.disabled = true;
+            
+            const dateParts = inputDate.split("-");
+            const formattedDate = `${dateParts[2]}/${dateParts[1]}/${dateParts[0]}`;
+
+            try {
+                const response = await fetch(jsonUrl);
+                const data = await response.json();
+                
+                const student = data.studentResults.find(s => s["ID No."] == inputId && s["DOB"] == formattedDate);
+
+                if (student) {
+                    errorMsg.classList.add('hidden');
+                    // ডাটা সঠিক হলে transcript.html পেজে রিডাইরেক্ট করবে এবং URL এর সাথে ডাটা পাঠিয়ে দিবে
+                    window.location.href = `transcript.html?id=${inputId}&dob=${encodeURIComponent(formattedDate)}`;
+                } else {
+                    errorMsg.classList.remove('hidden');
+                    btn.innerText = "রেজাল্ট দেখুন";
+                    btn.disabled = false;
+                }
+            } catch (err) {
+                console.error(err);
+                alert("সার্ভার সমস্যা! পরে আবার চেষ্টা করুন।");
+                btn.innerText = "রেজাল্ট দেখুন";
+                btn.disabled = false;
+            }
+        }
+    </script>
+</body>
+</html>
