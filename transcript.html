@@ -6,7 +6,6 @@
     <title>Academic Transcript</title>
     <script src="https://cdn.tailwindcss.com"></script>
 <script src="https://cdnjs.cloudflare.com/ajax/libs/html2pdf.js/0.10.1/html2pdf.bundle.min.js"></script>
-
     <style>
         @import url('https://fonts.googleapis.com/css2?family=Hind+Siliguri:wght@300;400;600;700&display=swap');
         
@@ -27,22 +26,24 @@
 
        #transcript-paper {
     width: 210mm;
-    min-width: 210mm;
     height: 297mm;
-    min-height: 297mm; 
     background: white;
     padding: 15mm;
     position: relative;
-    box-shadow: 0 0 20px rgba(0,0,0,0.5);
+    box-shadow: none;
     overflow: hidden;
+    box-sizing: border-box;
     
     background-image: url('texture.png');
-    background-size: 100% 100%;
-    background-repeat: no-repeat;
+    background-size: cover;
     background-position: center;
-    transform-origin: top center; 
-    transition: transform 0.2s ease;
 }
+
+@media print {
+    body { margin: 0; padding: 0; }
+    #transcript-paper { margin: 0; border: none; }
+}
+
 
         .watermark {
             position: absolute;
@@ -232,28 +233,33 @@
     const sId = document.getElementById('sId').innerText;
 
     const opt = {
-        margin: [5, 5],
+        margin: 0,
         filename: `Result_${sId}.pdf`,
-        image: { type: 'jpeg', quality: 0.95 },
+        image: { type: 'jpeg', quality: 1.0 },
         html2canvas: { 
-            scale: 2, 
-            useCORS: true,
-            letterRendering: true 
+            scale: 2,
+            useCORS: true, 
+            logging: false,
+            letterRendering: true,
+            scrollY: 0,
+            scrollX: 0
         },
-        jsPDF: { unit: 'mm', format: 'a4', orientation: 'portrait' }
+        jsPDF: { 
+            unit: 'mm', 
+            format: 'a4', 
+            orientation: 'portrait',
+            compress: true 
+        }
     };
-            
+
     const btn = event.currentTarget;
-    const originalText = btn.innerHTML;
     btn.innerText = "প্রসেসিং হচ্ছে...";
     
     html2pdf().set(opt).from(element).save().then(() => {
-        btn.innerHTML = originalText;
-    }).catch(err => {
-        alert("পিডিএফ তৈরি করতে সমস্যা হয়েছে। সিডিএন লিংক চেক করুন।");
-        btn.innerHTML = originalText;
+        btn.innerHTML = `<span>📄</span> PDF ডাউনলোড করুন`;
     });
 }
+
     </script>
 </body>
 </html>
